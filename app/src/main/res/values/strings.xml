@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LED control</string>
+
+    <string name="led_status">Leds</string>
+
+
+
+    <string name="mode_prompt">Choose a LED mode</string>
+    <string-array name="led_modes">
+        <item>Sound reactive</item>
+        <item>Star mode</item>
+        <item>Static color mode</item>
+        <item>Color cycling mode</item>
+    </string-array>
+</resources>
