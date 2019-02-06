@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-import static android.content.ContentValues.TAG;
-
 public class Bluetooth {
     private Activity context; // this is needed for messages
 

@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.stef.arduino.led_control.DeviceAdapter;
 import com.stef.arduino.led_control.Interface.InvalidationListener;
 import com.stef.arduino.led_control.Interface.Observable;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
@@ -52,14 +53,9 @@ public class BluetoothListView extends ListView implements AdapterView.OnItemCli
 
     @Override
     public void invalidated(Observable observable) {
-        ArrayList<String> devices = new ArrayList<>();
+        ArrayList<BluetoothDevice> devices = model.getDevices();
 
-        //TODO: put the device objects themselves in the listview
-        for(BluetoothDevice device : model.getDevices()) {
-            devices.add(device.getName());
-        }
-
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, devices);
+        final DeviceAdapter adapter = new DeviceAdapter(context, android.R.layout.simple_list_item_1, devices);
         setAdapter(adapter);
     }
 }
