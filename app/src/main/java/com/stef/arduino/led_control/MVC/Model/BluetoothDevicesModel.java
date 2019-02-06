@@ -21,14 +21,17 @@ public class BluetoothDevicesModel extends AbstractModel {
 
     public void addDevice(BluetoothDevice device) {
         devices.add(device);
+        fireInvalidationEvent();
     }
 
     public void setDevices(ArrayList<BluetoothDevice> devices) {
         this.devices = devices;
+        fireInvalidationEvent();
     }
 
     public void deleteDevice(BluetoothDevice device){
         devices.remove(device);
+        fireInvalidationEvent();
     }
 
     public ArrayList<BluetoothDevice> getDevices(){

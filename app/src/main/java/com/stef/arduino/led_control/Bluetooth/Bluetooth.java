@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import static android.content.ContentValues.TAG;
 
@@ -27,9 +29,11 @@ public class Bluetooth {
     private ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
     private BluetoothDevicesModel model;
 
-    public Bluetooth(Activity context) {
+    public Bluetooth(Activity context, BluetoothDevicesModel model) {
         this.context = context;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        this.model = model;
 
         checkBluetoothOn();
         discoverDevices();
@@ -40,7 +44,7 @@ public class Bluetooth {
         if (mAdapter != null) {
             if (!mAdapter.isEnabled()) {
                 Intent turnBon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                context.startActivityForResult(turnBon, 1);
+                context.startActivity(turnBon);
             }
         } else {
             // The bluetooth device isn't available
@@ -49,16 +53,15 @@ public class Bluetooth {
     }
 
     private void discoverDevices(){
-        // if the adapter is already in discovery mode, cancel the discovery
-        if(mAdapter.isDiscovering()) {
-            mAdapter.cancelDiscovery();
-        }
-        // check BT permissions in manifest
-        checkBTPermissions();
+        Set<BluetoothDevice> bondedDevices = mAdapter.getBondedDevices();
 
-        mAdapter.startDiscovery();
-        IntentFilter discoveryDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        context.registerReceiver(mReceiver, discoveryDevicesIntent);
+        if(bondedDevices.size() > 0){
+            Iterator<BluetoothDevice> iter = bondedDevices.iterator();
+
+            while (iter.hasNext()) {
+                model.addDevice(iter.next());
+            }
+        }
     }
 
     /**
@@ -67,36 +70,5 @@ public class Bluetooth {
      */
     public void setModel(BluetoothDevicesModel model){
         this.model = model;
-    }
-
-    /**
-     * Broadcast Receiver for listing devices that are not paired yet.
-     */
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d(TAG, "Discovering");
-
-            // When discovery finds a device
-            if(BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the bluetoothDevice object from the intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Add the device to the list of found devices
-                model.addDevice(device);
-                System.out.println("DEVICE FOUND: " + device.getName());
-            }
-        }
-    };
-
-    private void checkBTPermissions() {
-        // This code will only execute if the version is above lollipop therefore it wont crash
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            int permissionCheck = context.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-            permissionCheck += context.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-            if(permissionCheck != 0) {
-                context.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
-            }
-        }
     }
 }

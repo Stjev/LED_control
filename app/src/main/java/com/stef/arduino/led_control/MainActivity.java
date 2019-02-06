@@ -42,10 +42,8 @@ public class MainActivity extends AppCompatActivity {
         devicesModel = new BluetoothDevicesModel();
 
         bluetoothView = new BluetoothView();
-        bluetooth = new Bluetooth(this);
 
         bluetoothView.setStatusModel(statusModel);
-        bluetooth.setModel(devicesModel);
 
         // find the switch
         statusSwitch = findViewById(R.id.led_status_switch);
@@ -53,5 +51,7 @@ public class MainActivity extends AppCompatActivity {
         // find the listview
         listView = findViewById(R.id.lv_devices);
         listView.setModel(devicesModel);
+        // once the bluetooth model is bound with the listview, activate bluetooth and find the devices.
+        bluetooth = new Bluetooth(this, devicesModel);
     }
 }
