@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<?import com.stef.arduino.led_control.MVC.View.* ?>
+
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,7 +26,7 @@
             android:layout_height="61dp"
             android:orientation="horizontal">
 
-            <Switch
+            <com.stef.arduino.led_control.MVC.Controller.LedSwitch
                 android:id="@+id/led_status_switch"
                 android:layout_width="112dp"
                 android:layout_height="match_parent"
@@ -42,6 +45,11 @@
             android:layout_height="wrap_content"
             android:entries="@array/led_modes"
             android:prompt="@string/mode_prompt" />
+
+        <com.stef.arduino.led_control.MVC.Controller.BluetoothListView
+            android:id="@+id/lv_devices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
