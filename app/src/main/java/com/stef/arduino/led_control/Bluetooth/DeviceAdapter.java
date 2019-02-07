@@ -1,4 +1,4 @@
-package com.stef.arduino.led_control;
+package com.stef.arduino.led_control.Bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.stef.arduino.led_control.R;
 
 import java.util.List;
 
@@ -35,5 +37,10 @@ public class DeviceAdapter extends ArrayAdapter<BluetoothDevice> {
         address.setText(devices.get(position).getAddress());
 
         return vi;
+    }
+
+    @Override
+    public BluetoothDevice getItem(int position) {
+        return devices.get(position);
     }
 }

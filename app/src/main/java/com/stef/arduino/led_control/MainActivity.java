@@ -1,34 +1,19 @@
 package com.stef.arduino.led_control;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.stef.arduino.led_control.Bluetooth.Bluetooth;
 import com.stef.arduino.led_control.MVC.Controller.BluetoothListView;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
+import com.stef.arduino.led_control.MVC.Model.BluetoothRequestModel;
 import com.stef.arduino.led_control.MVC.View.BluetoothView;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
 import com.stef.arduino.led_control.MVC.Controller.LedSwitch;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BluetoothAdapter myBluetooth = null;
 
-    private Bluetooth bluetooth;
-
-    // CONTROLLERS
-    private LedSwitch statusSwitch;
-    private BluetoothListView listView;
-
-    // MODELS
-    private StatusModel statusModel;
-    private BluetoothDevicesModel devicesModel;
-
-    // VIEWS
-    private BluetoothView bluetoothView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +23,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeMVC(){
-        statusModel = new StatusModel();
-        devicesModel = new BluetoothDevicesModel();
+        // CONTROLLERS
+        LedSwitch statusSwitch = findViewById(R.id.led_status_switch);
+        BluetoothListView listView = findViewById(R.id.lv_devices);
 
-        bluetoothView = new BluetoothView();
+        // MODELS
+        StatusModel statusModel = new StatusModel();
+        BluetoothDevicesModel devicesModel = new BluetoothDevicesModel();
+        BluetoothRequestModel btRequestModel = new BluetoothRequestModel();
 
+        // VIEWS
+        BluetoothView bluetoothView = new BluetoothView();
+
+        // Connect the models to the views and the controllers
         bluetoothView.setStatusModel(statusModel);
 
-        // find the switch
-        statusSwitch = findViewById(R.id.led_status_switch);
+        // connect the switch controller
         statusSwitch.setModel(statusModel);
-        // find the listview
-        listView = findViewById(R.id.lv_devices);
-        listView.setModel(devicesModel);
+        // connect the listview controller
+        listView.setDevicesModel(devicesModel);
+        listView.setBluetoothRequestModel(btRequestModel);
         // once the bluetooth model is bound with the listview, activate bluetooth and find the devices.
-        bluetooth = new Bluetooth(this, devicesModel);
+        Bluetooth bluetooth = new Bluetooth(this, devicesModel);
+        bluetooth.setDevicesModel(devicesModel);
+        bluetooth.setRequestModel(btRequestModel);
+        // Check if the bluetooth is turned on on this device and discover the devices
+        bluetooth.checkBluetoothOn();
+        bluetooth.discoverDevices();
     }
 }
