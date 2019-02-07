@@ -131,10 +131,16 @@ public class Bluetooth implements InvalidationListener {
 
     private BluetoothSocket connectToDevice() {
         ParcelUuid[] uuids = device.getUuids();
-        BluetoothSocket socket;
+        // get the last known socket
+        BluetoothSocket socket = socketModel.getSocket();
 
         Toast.makeText(context, "Attempting to connect to device: " + device.getName(), Toast.LENGTH_SHORT);
         try {
+            // if there was already a connection, close that first
+            if(socket != null && socket.isConnected()) {
+                socket.close();
+            }
+
             socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
             // try to connect to the socket
