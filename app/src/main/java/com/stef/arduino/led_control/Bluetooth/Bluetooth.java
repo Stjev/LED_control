@@ -14,11 +14,11 @@ import com.stef.arduino.led_control.Interface.InvalidationListener;
 import com.stef.arduino.led_control.Interface.Observable;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
 import com.stef.arduino.led_control.MVC.Model.BluetoothRequestModel;
+import com.stef.arduino.led_control.MVC.Model.BluetoothSocketModel;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
-import java.util.UUID;
 
 public class Bluetooth implements InvalidationListener {
     private Activity context; // this is needed for messages
@@ -28,6 +28,7 @@ public class Bluetooth implements InvalidationListener {
     // MODELS
     private BluetoothDevicesModel devicesModel;
     private BluetoothRequestModel requestModel;
+    private BluetoothSocketModel socketModel;
 
     public Bluetooth(Activity context, BluetoothDevicesModel model) {
         this.context = context;
@@ -65,6 +66,10 @@ public class Bluetooth implements InvalidationListener {
         this.devicesModel = devicesModel;
     }
 
+    public void setSocketModel(BluetoothSocketModel socketModel) {
+        this.socketModel = socketModel;
+    }
+
     /**
      * Invalidationlistener
      */
@@ -85,31 +90,37 @@ public class Bluetooth implements InvalidationListener {
 
         // Connect to this device
         BluetoothSocket socket = connectToDevice();
+
+        // If a correct socket is returned, alert the model
+        if(socket != null) {
+            socketModel.setSocket(socket);
+        }
     }
 
     private BluetoothSocket connectToDevice() {
         ParcelUuid[] uuids = device.getUuids();
-        BluetoothSocket socket = null;
+        BluetoothSocket socket;
 
         try {
             socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
             // try to connect to the socket
+            socket.connect();
+            Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show();
+            // This will attempt the fallback
             try {
+                socket = (BluetoothSocket)device.getClass().getMethod("createRfcommSocket", int.class).invoke(device,1);
                 socket.connect();
-                Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                // This will attempt the fallback
-                try {
-                    socket = (BluetoothSocket)device.getClass().getMethod("createRfcommSocket", int.class).invoke(device,1);
-                    socket.connect();
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e2) {
-                    Toast.makeText(context, "Connecting to the selected device has failed. Please try again", Toast.LENGTH_LONG).show();
-                    Log.d("", e2.getMessage());
-                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e2) {
+                Toast.makeText(context, "Connecting to the selected device has failed. Please try again", Toast.LENGTH_LONG).show();
+                Log.d("", e2.getMessage());
+                // the process has failed, return null
+                return null;
             }
         } catch (IOException e) {
             Toast.makeText(context, "Error creating bluetooth socket.", Toast.LENGTH_LONG).show();
+            // the process has failed return null
+            return null;
         }
 
         return socket;

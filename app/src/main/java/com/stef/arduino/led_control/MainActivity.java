@@ -7,9 +7,12 @@ import com.stef.arduino.led_control.Bluetooth.Bluetooth;
 import com.stef.arduino.led_control.MVC.Controller.BluetoothListView;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
 import com.stef.arduino.led_control.MVC.Model.BluetoothRequestModel;
-import com.stef.arduino.led_control.MVC.View.BluetoothView;
+import com.stef.arduino.led_control.MVC.Model.BluetoothSocketModel;
+import com.stef.arduino.led_control.MVC.Model.BrightnessModel;
+import com.stef.arduino.led_control.MVC.Model.ModeModel;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
 import com.stef.arduino.led_control.MVC.Controller.LedSwitch;
+import com.stef.arduino.led_control.MVC.View.BluetoothSenderView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,14 +32,21 @@ public class MainActivity extends AppCompatActivity {
 
         // MODELS
         StatusModel statusModel = new StatusModel();
+        BrightnessModel brightnessModel = new BrightnessModel();
+        ModeModel modeModel = new ModeModel();
+
+        BluetoothSocketModel socketModel = new BluetoothSocketModel();
         BluetoothDevicesModel devicesModel = new BluetoothDevicesModel();
         BluetoothRequestModel btRequestModel = new BluetoothRequestModel();
 
         // VIEWS
-        BluetoothView bluetoothView = new BluetoothView();
+        BluetoothSenderView senderView = new BluetoothSenderView();
 
         // Connect the models to the views and the controllers
-        bluetoothView.setStatusModel(statusModel);
+        senderView.setStatusModel(statusModel);
+        senderView.setBrightnessModel(brightnessModel);
+        senderView.setModeModel(modeModel);
+        senderView.setSocketModel(socketModel);
 
         // connect the switch controller
         statusSwitch.setModel(statusModel);
@@ -47,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Bluetooth bluetooth = new Bluetooth(this, devicesModel);
         bluetooth.setDevicesModel(devicesModel);
         bluetooth.setRequestModel(btRequestModel);
+        bluetooth.setSocketModel(socketModel);
         // Check if the bluetooth is turned on on this device and discover the devices
         bluetooth.checkBluetoothOn();
         bluetooth.discoverDevices();
