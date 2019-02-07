@@ -1,6 +1,9 @@
 package com.stef.arduino.led_control.MVC.View;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothSocket;
+import android.widget.Toast;
 
 import com.stef.arduino.led_control.Interface.InvalidationListener;
 import com.stef.arduino.led_control.Interface.Observable;
@@ -9,6 +12,8 @@ import com.stef.arduino.led_control.MVC.Model.BluetoothSocketModel;
 import com.stef.arduino.led_control.MVC.Model.BrightnessModel;
 import com.stef.arduino.led_control.MVC.Model.ModeModel;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
+
+import java.io.IOException;
 
 public class BluetoothSenderView implements InvalidationListener {
     // MODELS
@@ -22,6 +27,13 @@ public class BluetoothSenderView implements InvalidationListener {
     private boolean status;
     private LedMode mode;
     private BluetoothSocket socket;
+
+    // This is used for displaying the error messages
+    private Activity context;
+
+    public BluetoothSenderView(Activity context) {
+        this.context = context;
+    }
 
     public void setBrightnessModel(BrightnessModel brightnessModel) {
         this.brightnessModel = brightnessModel;
@@ -48,11 +60,27 @@ public class BluetoothSenderView implements InvalidationListener {
         // set the socket
         if(socket != socketModel.getSocket()) socket = socketModel.getSocket();
         else {
-            if(brightness != brightnessModel.getBrightness()) brightness = brightnessModel.getBrightness();
-            if(status != statusModel.getStatus()) status = statusModel.getStatus();
-            if(mode != modeModel.getMode()) mode = modeModel.getMode();
+            if(socket == null || ! socket.isConnected()) {
+                // Display an alert when there is no current connection
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("There is currently no device connected.")
+                        .setTitle("Error")
+                        .create().show();
+            } else {
+                if(brightness != brightnessModel.getBrightness()) brightness = brightnessModel.getBrightness();
+                if(status != statusModel.getStatus()) status = statusModel.getStatus();
+                if(mode != modeModel.getMode()) mode = modeModel.getMode();
 
-            // TODO: send the data of all the fields above
+                char onOff = (status)? '3' : '4'; //TODO: TEMPORARY
+
+                try {
+                    socket.getOutputStream().write(onOff);
+                } catch (IOException e) {
+                    Toast.makeText(context, "There were some problems sending the data, please try again.", Toast.LENGTH_LONG).show();
+                }
+
+                // TODO: send the data of all the fields above
+            }
         }
     }
 }

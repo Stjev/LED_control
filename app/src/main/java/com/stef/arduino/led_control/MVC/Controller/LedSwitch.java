@@ -13,11 +13,15 @@ public class LedSwitch extends Switch implements CompoundButton.OnCheckedChangeL
 
     public LedSwitch(Context context) {
         super(context);
-        this.setOnCheckedChangeListener(this);
+        initialize();
     }
 
     public LedSwitch(Context context, AttributeSet attrs){
         super(context, attrs);
+        initialize();
+    }
+
+    private void initialize() {
         this.setOnCheckedChangeListener(this);
     }
 

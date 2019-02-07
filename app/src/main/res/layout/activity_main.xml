@@ -29,6 +29,7 @@
             <com.stef.arduino.led_control.MVC.Controller.LedSwitch
                 android:id="@+id/led_status_switch"
                 android:layout_width="112dp"
+                android:checked="true"
                 android:layout_height="match_parent"
                 android:padding="10dp"
                 android:text="@string/led_status" />

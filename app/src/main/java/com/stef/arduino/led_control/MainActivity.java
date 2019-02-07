@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothRequestModel btRequestModel = new BluetoothRequestModel();
 
         // VIEWS
-        BluetoothSenderView senderView = new BluetoothSenderView();
+        BluetoothSenderView senderView = new BluetoothSenderView(this);
 
         // Connect the models to the views and the controllers
         senderView.setStatusModel(statusModel);

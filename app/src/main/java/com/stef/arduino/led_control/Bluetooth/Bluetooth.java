@@ -74,7 +74,7 @@ public class Bluetooth implements InvalidationListener {
     /**
      * Method to discover the devices
      */
-    public void discoverDevices(){
+    private void discoverDevices(){
         Set<BluetoothDevice> bondedDevices = mAdapter.getBondedDevices();
 
         if(bondedDevices.size() > 0){
