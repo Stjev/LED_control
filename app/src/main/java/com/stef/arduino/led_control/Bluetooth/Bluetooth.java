@@ -3,9 +3,12 @@ package com.stef.arduino.led_control.Bluetooth;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.IntentFilter;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,12 +38,32 @@ public class Bluetooth implements InvalidationListener {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
+    /**
+     * This will detect when the state has changed for the adapter and will then execute the discover device
+     */
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            discoverDevices();
+        }
+    };
+
+    /**
+     * Method to check whether the devices bluetooth is currently on. This will also try to detect
+     * which bluetooth devices can be connected to.
+     */
     public void checkBluetoothOn() {
         // Check if bluetooth is available and if it is enabled
         if (mAdapter != null) {
             if (!mAdapter.isEnabled()) {
                 Intent turnBon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 context.startActivity(turnBon);
+
+                // this will make sure the devices only get discovered when the adapter is actually on
+                IntentFilter stateChangedFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+                context.registerReceiver(mReceiver, stateChangedFilter);
+            } else {
+                discoverDevices();
             }
         } else {
             // The bluetooth device isn't available
@@ -48,6 +71,9 @@ public class Bluetooth implements InvalidationListener {
         }
     }
 
+    /**
+     * Method to discover the devices
+     */
     public void discoverDevices(){
         Set<BluetoothDevice> bondedDevices = mAdapter.getBondedDevices();
 
@@ -105,24 +131,26 @@ public class Bluetooth implements InvalidationListener {
             socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
             // try to connect to the socket
-            socket.connect();
-            Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show();
-            // This will attempt the fallback
             try {
-                socket = (BluetoothSocket)device.getClass().getMethod("createRfcommSocket", int.class).invoke(device,1);
                 socket.connect();
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e2) {
-                Toast.makeText(context, "Connecting to the selected device has failed. Please try again", Toast.LENGTH_LONG).show();
-                Log.d("", e2.getMessage());
-                // the process has failed, return null
-                return null;
+
+            } catch (IOException e) {
+                // This will attempt the fallback
+                try {
+                    socket = (BluetoothSocket)device.getClass().getMethod("createRfcommSocket", int.class).invoke(device,1);
+                    socket.connect();
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e2) {
+                    Toast.makeText(context, "Connecting to the selected device has failed. Please try again", Toast.LENGTH_LONG).show();
+                    Log.d("", e2.getMessage());
+                }
             }
         } catch (IOException e) {
             Toast.makeText(context, "Error creating bluetooth socket.", Toast.LENGTH_LONG).show();
-            // the process has failed return null
             return null;
         }
 
+        // send a message to let the user know the connection has been established
+        Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show();
         return socket;
     }
 }

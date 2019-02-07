@@ -60,6 +60,5 @@ public class MainActivity extends AppCompatActivity {
         bluetooth.setSocketModel(socketModel);
         // Check if the bluetooth is turned on on this device and discover the devices
         bluetooth.checkBluetoothOn();
-        bluetooth.discoverDevices();
     }
 }
