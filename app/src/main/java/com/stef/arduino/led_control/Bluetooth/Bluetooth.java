@@ -33,6 +33,8 @@ public class Bluetooth implements InvalidationListener {
     private BluetoothRequestModel requestModel;
     private BluetoothSocketModel socketModel;
 
+    private static final String MAC_ADDRESS = "98:D3:32:21:5C:41";
+
     public Bluetooth(Activity context, BluetoothDevicesModel model) {
         this.context = context;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -79,6 +81,10 @@ public class Bluetooth implements InvalidationListener {
 
         if(bondedDevices.size() > 0){
             for (BluetoothDevice bondedDevice : bondedDevices) {
+                // Try to instantly connect to the bluetooth module connected to the arduino
+                if(bondedDevice.getAddress().equals(MAC_ADDRESS)) {
+                    requestModel.setDevice(bondedDevice);
+                }
                 devicesModel.addDevice(bondedDevice);
             }
         }
@@ -127,6 +133,7 @@ public class Bluetooth implements InvalidationListener {
         ParcelUuid[] uuids = device.getUuids();
         BluetoothSocket socket;
 
+        Toast.makeText(context, "Attempting to connect to device: " + device.getName(), Toast.LENGTH_SHORT);
         try {
             socket = device.createRfcommSocketToServiceRecord(uuids[0].getUuid());
 
