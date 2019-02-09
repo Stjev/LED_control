@@ -14,6 +14,7 @@ import com.stef.arduino.led_control.MVC.Model.ModeModel;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class BluetoothSenderView implements InvalidationListener {
     // MODELS
@@ -22,11 +23,11 @@ public class BluetoothSenderView implements InvalidationListener {
     private StatusModel statusModel;
     private BluetoothSocketModel socketModel;
 
-    // VALUES
+    // VALUES (defaults are set)
     private short brightness;
     private boolean status;
     private LedMode mode;
-    private BluetoothSocket socket;
+    private BluetoothSocket socket = null;
 
     // This is used for displaying the error messages
     private Activity context;
@@ -71,10 +72,16 @@ public class BluetoothSenderView implements InvalidationListener {
                 if(status != statusModel.getStatus()) status = statusModel.getStatus();
                 if(mode != modeModel.getMode()) mode = modeModel.getMode();
 
-                char onOff = (status)? '3' : '4'; //TODO: TEMPORARY
+                // If the leds are supposed to be off, set the mode to 0. Otherwise set the mode to
+                // whatever is selected
+                byte sendMode = (byte) (mode.ordinal());
+                byte sendBrightness = (byte) ((status)? (brightness & 0xFF) : 0);
 
                 try {
-                    socket.getOutputStream().write(onOff);
+                    OutputStream ostream = socket.getOutputStream();
+
+                    ostream.write(sendMode);
+                    ostream.write(sendBrightness);
                 } catch (IOException e) {
                     Toast.makeText(context, "There were some problems sending the data, please try again.", Toast.LENGTH_LONG).show();
                 }

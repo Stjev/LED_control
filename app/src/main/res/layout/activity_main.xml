@@ -34,23 +34,22 @@
                 android:padding="10dp"
                 android:text="@string/led_status" />
 
-            <SeekBar
+            <com.stef.arduino.led_control.MVC.Controller.BrightnessSlider
                 android:id="@+id/slider_brightness"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
 
-        <Spinner
+        <com.stef.arduino.led_control.MVC.Controller.ModeSpinner
             android:id="@+id/mode_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/led_modes"
             android:prompt="@string/mode_prompt" />
 
-        <com.stef.arduino.led_control.MVC.Controller.BluetoothListView
+        <!-- <com.stef.arduino.led_control.MVC.Controller.BluetoothListView
             android:id="@+id/lv_devices"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" /> -->
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
