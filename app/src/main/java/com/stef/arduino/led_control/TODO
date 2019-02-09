@@ -2,5 +2,6 @@ TODO:
     ANDROID:
         ++ Start a new thread whenever bluetooth is connecting.
         +  Put the listview of bluetooth devices in a seperate menu.
+        + CODE CLEANUP: every view has it's context in getContext(), no extra field needed
     ARDUINO:
         + For different modes, different type of data is sent

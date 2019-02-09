@@ -60,11 +60,8 @@ public class MainActivity extends AppCompatActivity {
         slider = findViewById(R.id.slider_brightness);
 
         spinner = findViewById(R.id.mode_spinner);
-        // set the adapter for the spinner
-        spinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_cell, LedMode.values()));
-        // set color_cycling as the default
-        spinner.setSelection(LedMode.COLOR_CYCLING.ordinal());
 
+        spinner.setSelection(spinner.getSelectedItemPosition(), false);
         // find the color picker button
         button = findViewById(R.id.color_button);
     }
@@ -92,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         senderView.setBrightnessModel(brightnessModel);
         senderView.setModeModel(modeModel);
         senderView.setSocketModel(socketModel);
+        senderView.setColorModel(colorModel);
 
         // connect the switch controller
         statusSwitch.setModel(statusModel);
