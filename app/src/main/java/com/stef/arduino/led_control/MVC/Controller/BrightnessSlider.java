@@ -27,6 +27,7 @@ public class BrightnessSlider extends android.support.v7.widget.AppCompatSeekBar
     private void initialize() {
         this.setOnSeekBarChangeListener(this);
         this.setMax(255);
+        this.setProgress(255);
     }
 
     @Override
