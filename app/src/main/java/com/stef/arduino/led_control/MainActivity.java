@@ -1,17 +1,24 @@
 package com.stef.arduino.led_control;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.stef.arduino.led_control.Bluetooth.Bluetooth;
-import com.stef.arduino.led_control.MVC.Controller.BluetoothListView;
 import com.stef.arduino.led_control.MVC.Controller.BrightnessSlider;
+import com.stef.arduino.led_control.MVC.Controller.ColorPickerButton;
 import com.stef.arduino.led_control.MVC.Controller.ModeSpinner;
 import com.stef.arduino.led_control.MVC.Model.BluetoothDevicesModel;
 import com.stef.arduino.led_control.MVC.Model.BluetoothRequestModel;
 import com.stef.arduino.led_control.MVC.Model.BluetoothSocketModel;
 import com.stef.arduino.led_control.MVC.Model.BrightnessModel;
+import com.stef.arduino.led_control.MVC.Model.ColorModel;
 import com.stef.arduino.led_control.MVC.Model.ModeModel;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
 import com.stef.arduino.led_control.MVC.Controller.LedSwitch;
@@ -32,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
     BluetoothSocketModel socketModel;
     BluetoothDevicesModel devicesModel;
     BluetoothRequestModel btRequestModel;
+    ColorModel colorModel;
 
     // VIEWS
     BluetoothSenderView senderView;
+    ColorPickerButton button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_cell, LedMode.values()));
         // set color_cycling as the default
         spinner.setSelection(LedMode.COLOR_CYCLING.ordinal());
+
+        // find the color picker button
+        button = findViewById(R.id.color_button);
     }
 
     private void initializeMVC() {
@@ -65,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         socketModel     = new BluetoothSocketModel();
         devicesModel    = new BluetoothDevicesModel();
         btRequestModel  = new BluetoothRequestModel();
+        colorModel      = new ColorModel();
 
         // Initialize the views
         senderView = new BluetoothSenderView(this);

@@ -46,6 +46,12 @@
             android:layout_height="wrap_content"
             android:prompt="@string/mode_prompt" />
 
+        <com.stef.arduino.led_control.MVC.Controller.ColorPickerButton
+            android:id="@+id/color_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_color_picker_prompt" />
+
         <!-- <com.stef.arduino.led_control.MVC.Controller.BluetoothListView
             android:id="@+id/lv_devices"
             android:layout_width="match_parent"

@@ -1,3 +1,6 @@
 TODO:
-    ++ Start a new thread whenever bluetooth is connecting.
-    +  Put the listview of bluetooth devices in a seperate menu.
+    ANDROID:
+        ++ Start a new thread whenever bluetooth is connecting.
+        +  Put the listview of bluetooth devices in a seperate menu.
+    ARDUINO:
+        + For different modes, different type of data is sent

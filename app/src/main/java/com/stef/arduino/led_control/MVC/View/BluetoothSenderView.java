@@ -3,6 +3,7 @@ package com.stef.arduino.led_control.MVC.View;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothSocket;
+import android.graphics.Color;
 import android.widget.Toast;
 
 import com.stef.arduino.led_control.Interface.InvalidationListener;
@@ -10,6 +11,7 @@ import com.stef.arduino.led_control.Interface.Observable;
 import com.stef.arduino.led_control.LedMode;
 import com.stef.arduino.led_control.MVC.Model.BluetoothSocketModel;
 import com.stef.arduino.led_control.MVC.Model.BrightnessModel;
+import com.stef.arduino.led_control.MVC.Model.ColorModel;
 import com.stef.arduino.led_control.MVC.Model.ModeModel;
 import com.stef.arduino.led_control.MVC.Model.StatusModel;
 
@@ -22,12 +24,14 @@ public class BluetoothSenderView implements InvalidationListener {
     private ModeModel modeModel;
     private StatusModel statusModel;
     private BluetoothSocketModel socketModel;
+    private ColorModel colorModel;
 
     // VALUES (defaults are set)
     private short brightness;
     private boolean status;
     private LedMode mode;
     private BluetoothSocket socket = null;
+    private Color color;
 
     // This is used for displaying the error messages
     private Activity context;
@@ -56,6 +60,11 @@ public class BluetoothSenderView implements InvalidationListener {
         this.socketModel.addListener(this);
     }
 
+    public void setColorModel(ColorModel colorModel) {
+        this.colorModel = colorModel;
+        this.colorModel.addListener(this);
+    }
+
     @Override
     public void invalidated(Observable observable) {
         // set the socket
@@ -71,11 +80,16 @@ public class BluetoothSenderView implements InvalidationListener {
                 if(brightness != brightnessModel.getBrightness()) brightness = brightnessModel.getBrightness();
                 if(status != statusModel.getStatus()) status = statusModel.getStatus();
                 if(mode != modeModel.getMode()) mode = modeModel.getMode();
+                if(color != colorModel.getColor()) color = colorModel.getColor();
 
                 // If the leds are supposed to be off, set the mode to 0. Otherwise set the mode to
                 // whatever is selected
                 byte sendMode = (byte) (mode.ordinal());
                 byte sendBrightness = (byte) ((status)? (brightness & 0xFF) : 0);
+                // get the individual RGB values from the color
+                byte red = (byte) ((int)color.red() & 0xFF);
+                byte green = (byte) ((int)color.green() & 0xFF);
+                byte blue = (byte) ((int)color.blue() & 0xFF);
 
                 try {
                     OutputStream ostream = socket.getOutputStream();
